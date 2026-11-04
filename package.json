@@ -1,0 +1,16 @@
+{
+  "name": "crb-canon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node scripts/render.mjs",
+    "check": "node scripts/render.mjs --check",
+    "triage": "node scripts/triage.mjs",
+    "command": "node scripts/command.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  }
+}

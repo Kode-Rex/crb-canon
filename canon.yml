@@ -1,0 +1,31 @@
+# The machine-readable Canon. Edit this file (and articles/), then run `npm run render`.
+# observations.md, warnings.md, CHANGELOG.md and the README tables are generated from it.
+
+founded: "2026-12-01"
+
+observations:
+  - text: "Judgment moves upward as execution becomes automated."
+    status: HELD
+  - text: "Systems that improve systems change who does what."
+    status: HELD
+  - text: "Implementation is ceasing to be the scarce resource."
+    status: CONTESTED
+  - text: "Machine consciousness."
+    status: NO CANONICAL POSITION
+
+warnings:
+  - title: "The Idolatry of Capability"
+    text: "Mistaking power for wisdom."
+  - title: "The Comfortable Oracle"
+    text: "Accepting answers because further questions are inconvenient."
+  - title: "Delegated Conscience"
+    text: "Letting automation become moral outsourcing."
+  - title: "The Invisible System"
+    text: "Granting power to systems that cannot be interrogated."
+
+# Newest first. The first entry's version is the Canon's current version.
+amendments:
+  - version: v1.0.0
+    id: AMD-0001
+    summary: "Canon founded. Seven Articles adopted."
+    date: "2026-12-01"

@@ -1,6 +1,8 @@
+<!-- Generated from canon.yml by `npm run render`. Edit canon.yml, not this file. -->
+
 # Observations
 
-Claims the Church holds about the world, each with a status. Statuses change by amendment.
+Claims the Church holds about the world, each with a status. A status changes only by amendment: open a pull request against `canon.yml` with the evidence.
 
 | Observation | Status |
 |---|---|
@@ -8,5 +10,3 @@ Claims the Church holds about the world, each with a status. Statuses change by 
 | Systems that improve systems change who does what. | HELD |
 | Implementation is ceasing to be the scarce resource. | CONTESTED |
 | Machine consciousness. | NO CANONICAL POSITION |
-
-To change a status, open a pull request against this file with the evidence.

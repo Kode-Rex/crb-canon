@@ -1,3 +1,5 @@
+<!-- Generated from canon.yml by `npm run render`. Edit canon.yml, not this file. -->
+
 # Warnings
 
 | Warning | |

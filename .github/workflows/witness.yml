@@ -1,0 +1,63 @@
+# The Witness process: HydraOps suggests a ruling on every challenge and amendment,
+# pings the Steward, and carries out the Steward's /commands.
+name: Witness
+
+on:
+  issues:
+    types: [opened, reopened]
+  pull_request_target: # base-branch code only; the PR's own code is never checked out or run
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write # WITNESSES.md
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: witness-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    if: github.event_name != 'issue_comment'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Suggest a ruling
+        run: node scripts/triage.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.HYDRAOPS_TOKEN || github.token }}
+          STEWARD: ${{ vars.STEWARD || 'T-rav' }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+
+  ruling:
+    if: github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Carry out the ruling
+        run: node scripts/command.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.HYDRAOPS_TOKEN || github.token }}
+          STEWARD: ${{ vars.STEWARD || 'T-rav' }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}

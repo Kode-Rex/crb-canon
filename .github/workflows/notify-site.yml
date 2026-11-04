@@ -1,0 +1,29 @@
+# When the Canon changes, ask recursivebecoming.org to rebuild from it.
+name: Notify site
+
+on:
+  push:
+    branches: [main]
+    paths: ['canon.yml', 'articles/**']
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the site to rebuild
+        env:
+          TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::notice::SITE_DISPATCH_TOKEN is not set; the site's daily build will pick this change up."
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/Kode-Rex/recursivebecoming.org/dispatches \
+            -d "{\"event_type\":\"canon-updated\",\"client_payload\":{\"sha\":\"$SHA\"}}"
