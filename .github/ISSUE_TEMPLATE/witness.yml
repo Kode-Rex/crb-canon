@@ -1,0 +1,29 @@
+name: Witness a claim
+description: Challenge an Article, Observation, Warning, sermon, or anything the Founder said.
+title: "Challenge: "
+labels: ["witness"]
+body:
+  - type: input
+    id: claim
+    attributes:
+      label: The claim
+      description: Quote it, and link to where it lives.
+    validations:
+      required: true
+  - type: textarea
+    id: breaks
+    attributes:
+      label: Where it breaks
+      description: The strongest objection you can find.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Observation outranks belief. Counterexamples welcome.
+  - type: textarea
+    id: revision
+    attributes:
+      label: Proposed revision
+      description: Optional. What should the Canon say instead?
