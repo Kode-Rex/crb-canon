@@ -65,6 +65,8 @@ export const LABELS = {
   amendment: ['0E0E0E', 'A proposed change to the Canon.'],
   'adoption-approved': ['8FA89A', 'Steward approves adoption once the debate period ends.'],
   witness: ['C97B52', 'A challenge to a claim. Bring evidence.'],
+  gathering: ['8FA89A', 'A report from an Assembly gathering.'],
+  'self-organized': ['C97B52', 'A gathering its host organized without the Founder. Counts for the pre-registration.'],
 };
 
 export async function ensureLabels(names) {

@@ -226,6 +226,15 @@ export async function triage(number) {
     console.log(`#${number} was opened by ${sub.issue.user.login}; HydraOps does not triage its own work.`);
     return;
   }
+  if (sub.issue.labels?.some((l) => (l.name ?? l) === 'gathering')) {
+    // A gathering report is a record, not a challenge: thank the host, ping the Steward, no ruling.
+    const self = /ask you to host it\?\s*\n+\s*No, we organized it ourselves/i.test(sub.issue.body ?? '');
+    await ensureLabels(['gathering', ...(self ? ['self-organized'] : [])]);
+    if (self) await addLabels(number, ['self-organized']);
+    await comment(number, `Recorded in the Archive. Thank you for hosting.\n\n@${steward()}, a gathering was reported${self ? ' by a host who organized it themselves' : ''}.\n\nIf anything from it should change the Canon, open a [Witness issue](../issues/new?template=witness.yml) and link this report.\n${MARKER}`);
+    await notify(`Canon #${number}: a gathering was reported${self ? ' (self-organized)' : ''}. https://github.com/${repo()}/issues/${number}`);
+    return;
+  }
   if (!process.env.ANTHROPIC_API_KEY) {
     // Not configured yet: still ping the Steward, just without a suggestion.
     await comment(number, `### Witness triage · not configured\n\n@${steward()}, a new ${sub.isPR ? 'amendment' : 'challenge'} awaits your ruling. Automated triage is off until \`ANTHROPIC_API_KEY\` is set on this repository.\n\nRule with \`/accept\` · \`/reject <reason>\` · \`/needs-evidence\` · \`/duplicate #N\` · \`/amend\`\n${MARKER}`);

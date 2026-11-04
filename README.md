@@ -32,6 +32,7 @@ Disagreement is the highest form of participation here.
 
 - **Challenge** a claim: [open a Witness issue](../../issues/new?template=witness.yml). Bring evidence, not authority.
 - **Amend** the Canon: open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for how doctrine changes.
+- **Hosted a gathering?** [Report it](../../issues/new?template=gathering.yml) so the Archive keeps the record.
 
 Three accepted challenges make you a Witness of the Church.
 

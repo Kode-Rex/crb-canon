@@ -1,0 +1,63 @@
+name: Report a gathering
+description: You hosted an Assembly. Tell the Archive what happened.
+title: "Gathering: "
+labels: ["gathering"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for hosting. The Archive keeps a record of every gathering. Nothing here is public beyond what you write.
+        New to hosting? The run of show is at [recursivebecoming.org/assembly/host-kit](https://recursivebecoming.org/assembly/host-kit/).
+  - type: input
+    id: date
+    attributes:
+      label: Date
+      description: When it happened (YYYY-MM-DD).
+      placeholder: "2027-01-15"
+    validations:
+      required: true
+  - type: input
+    id: place
+    attributes:
+      label: City or node
+      description: Where. A city is enough.
+    validations:
+      required: true
+  - type: input
+    id: attendance
+    attributes:
+      label: How many people
+      description: Including you.
+    validations:
+      required: true
+  - type: dropdown
+    id: organized
+    attributes:
+      label: Did Rev. Travis Frisinger organize this gathering or ask you to host it?
+      options:
+        - "No, we organized it ourselves"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: The Observation
+      description: The claim someone proposed, in one sentence.
+    validations:
+      required: true
+  - type: textarea
+    id: witness
+    attributes:
+      label: What the Witness challenged
+      description: The strongest objection raised, and whether the claim survived it.
+  - type: textarea
+    id: build
+    attributes:
+      label: The Build
+      description: What was shown, and what it taught.
+  - type: textarea
+    id: amendment
+    attributes:
+      label: Anything worth keeping
+      description: If something should change the Canon, say what. Link a Witness issue or pull request if you opened one.
