@@ -89,7 +89,7 @@ export async function notify(text) {
   const url = process.env.NOTIFY_WEBHOOK_URL;
   if (!url || DRY_RUN) return;
   try {
-    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, content: text }) });
+    await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, content: text, allowed_mentions: { parse: [] } }) });
   } catch (e) {
     console.warn(`Notify webhook failed: ${e}`);
   }

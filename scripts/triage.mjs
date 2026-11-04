@@ -157,13 +157,29 @@ async function rule(canon, sub, others, record) {
   return { refused: false, ruling: Ruling.parse(JSON.parse(text)), model: response.model };
 }
 
+/**
+ * Model text is derived from untrusted submissions. Before it reaches a bot-authored comment:
+ * no @mentions (no mass pings), no HTML comments (no hidden text or forged markers), no images,
+ * and a length cap.
+ */
+function clean(text, max = 1200) {
+  const s = String(text)
+    .replace(/<!--|-->/g, '')
+    .replace(/!\[/g, '[')
+    .replace(/@(?=[A-Za-z0-9_-])/g, '@\u200b')
+    .replace(/\s+\n/g, '\n')
+    .trim();
+  return s.length > max ? s.slice(0, max - 1) + '…' : s;
+}
+
 function debateEnds(sub) {
   const days = sub.touchesArticles ? 14 : 7;
   const end = new Date(new Date(sub.issue.created_at).getTime() + days * 86400000);
   return { days, date: end.toISOString().slice(0, 10) };
 }
 
-function render(sub, r, record) {
+function render(sub, raw, record) {
+  const r = { ...raw, target: clean(raw.target, 120), summary: clean(raw.summary, 400), reasoning: clean(raw.reasoning), strongest_point: clean(raw.strongest_point), weakest_point: clean(raw.weakest_point), proposed_revision: clean(raw.proposed_revision, 2000) };
   const who = `@${steward()}`;
   const verdict = r.suggestion.toUpperCase().replace('-', ' ');
   const lines = [
@@ -212,7 +228,7 @@ export async function triage(number) {
   const result = await rule(canon, sub, others, record);
 
   if (result.refused) {
-    await comment(number, `### Witness triage · no suggestion\n\n@${steward()}, the model declined to assess this one (${result.detail}). Please read it yourself.\n\n${MARKER}`);
+    await comment(number, `### Witness triage · no suggestion\n\n@${steward()}, the model declined to assess this one (${clean(result.detail, 40)}). Please read it yourself.\n\n${MARKER}`);
     await notify(`Canon #${number} needs a human read: triage declined. https://github.com/${repo()}/issues/${number}`);
     return;
   }
@@ -222,7 +238,8 @@ export async function triage(number) {
   await ensureLabels([`suggested:${r.suggestion}`, ...(sub.isPR ? ['amendment'] : ['witness'])]);
   await addLabels(number, [`suggested:${r.suggestion}`, ...(sub.isPR ? ['amendment'] : [])]);
   await comment(number, render(sub, r, record));
-  await notify(`Canon #${number} (${r.target}): HydraOps suggests ${r.suggestion.toUpperCase()}. ${r.summary} https://github.com/${repo()}/issues/${number}`);
+  // Webhook gets fixed fields only: no model or submitter text leaves GitHub.
+  await notify(`Canon #${number}: HydraOps suggests ${r.suggestion.toUpperCase()} (${r.confidence}). https://github.com/${repo()}/issues/${number}`);
   console.log(`#${number}: suggested ${r.suggestion} (${r.confidence})`);
 }
 
