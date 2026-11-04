@@ -159,13 +159,15 @@ async function rule(canon, sub, others, record) {
 
 /**
  * Model text is derived from untrusted submissions. Before it reaches a bot-authored comment:
- * no @mentions (no mass pings), no HTML comments (no hidden text or forged markers), no images,
- * and a length cap.
+ * no @mentions (no mass pings), no HTML at all (no hidden text, forged markers, or tracking
+ * images), no Markdown images, and a length cap. Single-pass escapes that cannot recombine.
  */
 function clean(text, max = 1200) {
   const s = String(text)
-    .replace(/<!--|-->/g, '')
-    .replace(/!\[/g, '[')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;') // no raw HTML, comments, or forged markers can survive
+    .replace(/>/g, '&gt;')
+    .replace(/!(?=\[)/g, '! ') // "![" never forms an image, even from "!![
     .replace(/@(?=[A-Za-z0-9_-])/g, '@\u200b')
     .replace(/\s+\n/g, '\n')
     .trim();
