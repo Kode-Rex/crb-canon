@@ -224,6 +224,12 @@ export async function triage(number) {
     console.log(`#${number} was opened by ${sub.issue.user.login}; HydraOps does not triage its own work.`);
     return;
   }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    // Not configured yet: still ping the Steward, just without a suggestion.
+    await comment(number, `### Witness triage · not configured\n\n@${steward()}, a new ${sub.isPR ? 'amendment' : 'challenge'} awaits your ruling. Automated triage is off until \`ANTHROPIC_API_KEY\` is set on this repository.\n\nRule with \`/accept\` · \`/reject <reason>\` · \`/needs-evidence\` · \`/duplicate #N\` · \`/amend\`\n${MARKER}`);
+    await notify(`Canon #${number}: new submission, triage not configured. https://github.com/${repo()}/issues/${number}`);
+    return;
+  }
   const [others, record] = await Promise.all([otherSubmissions(number), acceptedCount(sub.issue.user.login)]);
   const result = await rule(canon, sub, others, record);
 
