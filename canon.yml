@@ -8,9 +8,23 @@ observations:
     status: HELD
   - text: "Systems that improve systems change who does what."
     status: HELD
+  - text: "The constraint has moved from making to checking."
+    status: HELD
+  - text: "Output released beyond the demonstrated ability to evaluate it is slop, whoever made it."
+    status: HELD
+  - text: "Judges from one family share one set of blind spots."
+    status: HELD
+  - text: "A system that can widen its own authority will."
+    status: HELD
+  - text: "The claim of a fix is not the fix. Only the record is."
+    status: HELD
   - text: "Implementation is ceasing to be the scarce resource."
     status: CONTESTED
-  - text: "Machine consciousness."
+  - text: "A human inside the loop is a failure the system has not yet learned to handle."
+    status: CONTESTED
+  - text: "Cost is a governor, not an expense."
+    status: CONTESTED
+  - text: "Machines have inner experience."
     status: NO CANONICAL POSITION
 
 warnings:
@@ -22,6 +36,8 @@ warnings:
     text: "Letting automation become moral outsourcing."
   - title: "The Invisible System"
     text: "Granting power to systems that cannot be interrogated."
+  - title: "The Same Hand"
+    text: "Taking a verdict from the hand that made the thing."
 
 # Newest first. The first entry's version is the Canon's current version.
 amendments:

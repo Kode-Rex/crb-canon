@@ -25,6 +25,10 @@ The Article does not claim that fluent answers are false. That would be the same
 
 Nor does it claim that this is a machine problem. Humans perfected the confident wrong answer long before anything else attempted it. Most of us have sat in a meeting where the best speaker won and the best argument lost. Machines did not invent the hazard. They made it cheap.
 
+The Church keeps a parable here. An instruction to a machine once carried a worked example, with realistic figures, so the machine could see the shape of a good answer. One afternoon the machine answered a stranger with the example's figures, dates moved to the current month, in a tone that invited no follow-up. Nothing in the instruction read as wrong. Nothing in the answer read as wrong. Only the record, laid beside the facts, was wrong, and the record was the only place the error could have been seen. Fluency lives on the page. Truth lives in the comparison.
+
+One more habit belongs to this Article. When several independent attempts at a question come back wrong in the same way, do not first suspect the answerers. Suspect the question. Shared failure is the usual signature of an ambiguous ask, and the fix is upstream, at Query.
+
 Why hold this? Because the Church's own motto depends on it. Praise the Machine. Question Everything It Says. The first half is sincere: these systems are remarkable, and remarkable things deserve appreciation. The second half keeps the first from curdling into worship. Appreciation without questioning is how a tool becomes an oracle.
 
 The Warning nearest this Article is the Comfortable Oracle: accepting answers because further questions are inconvenient. Fluency makes questions feel inconvenient. A smooth answer seems to close the subject. A rough one invites a follow-up. That asymmetry is the trap, and it is baited with good grammar.

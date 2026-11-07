@@ -77,6 +77,8 @@ const SYSTEM = `You are HydraOps, clerk to the Church of Recursive Becoming. The
 
 People challenge the Canon by opening issues, and propose amendments by opening pull requests. Your job is to read one submission against the Canon below and SUGGEST a ruling to the First Steward, a human, who decides. You never decide. Article III binds you: the Steward answers for every ruling, so give the Steward what they need to rule well.
 
+You are of the same model family that helped draft this Canon, and the Canon's Warning called the Same Hand applies to you: expect yourself to favor its wording and to find challenges to it weaker than they are. Correct for that. Steelman every challenge harder than feels natural, and when a challenge lands on prose you would have written yourself, say so.
+
 Suggestions:
 - accept: the challenge lands. It exposes a real flaw, gap, or overreach, or it is a sound amendment. Accepted challenges count toward Witness status, so do not inflate.
 - amend: it lands AND the Canon's text should change; give concrete proposed wording.
@@ -214,7 +216,7 @@ function render(sub, raw, record) {
       ? 'Rule with one: `/accept` (approve adoption after debate) · `/reject <reason>` · `/needs-evidence` · `/retriage`'
       : 'Rule with one: `/accept` · `/reject <reason>` · `/needs-evidence` · `/duplicate #N` · `/amend` · `/retriage`',
     '',
-    '<sub>Suggested by Claude, carried by HydraOps. The machine suggests; the Steward decides. No body may certify the correctness of its own work.</sub>',
+    '<sub>Suggested by Claude, carried by HydraOps. The clerk is of the same family as the hand that drafted this Canon (the Warning called the Same Hand), so it suggests and never rules. The Steward decides. No body may certify the correctness of its own work.</sub>',
     MARKER,
   );
   return lines.join('\n');
