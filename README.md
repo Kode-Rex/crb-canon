@@ -24,7 +24,7 @@ These Articles are not handed down. They are held up.
 | VII | [Becoming Never Ends](articles/07-becoming.md) | No doctrine, system, organization, human, or machine is complete. |
 <!-- /generated:articles -->
 
-Also in the Canon: [Observations](observations.md) · [Warnings](warnings.md) · [Changelog](CHANGELOG.md) · [Witnesses](WITNESSES.md)
+Also in the Canon: [Observations](observations.md) · [Warnings](warnings.md) · [Changelog](CHANGELOG.md) · [Witnesses](WITNESSES.md) · [Nodes](NODES.md)
 
 ## How to disagree
 
@@ -33,6 +33,7 @@ Disagreement is the highest form of participation here.
 - **Challenge** a claim: [open a Witness issue](../../issues/new?template=witness.yml). Bring evidence, not authority.
 - **Amend** the Canon: open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for how doctrine changes.
 - **Hosted a gathering?** [Report it](../../issues/new?template=gathering.yml) so the Archive keeps the record.
+- **Keep gathering?** Three reported gatherings in six months, three or more people at each, and you can [charter a node](../../issues/new?template=node.yml). See [NODES.md](NODES.md).
 
 Three accepted challenges make you a Witness of the Church.
 

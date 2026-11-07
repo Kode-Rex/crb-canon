@@ -1,0 +1,28 @@
+# Weekly: a node with no reported gathering for six months is marked Dormant on NODES.md.
+# Revival is the other half, in the Witness triage: the Steward's next gathering report makes it Active again.
+name: Nodes
+
+on:
+  schedule:
+    - cron: '23 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write # NODES.md
+  issues: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Mark lapsed nodes Dormant
+        run: node scripts/sweep-nodes.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.HYDRAOPS_TOKEN || github.token }}

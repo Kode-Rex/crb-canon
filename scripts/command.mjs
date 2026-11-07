@@ -1,7 +1,9 @@
 // Carry out the Steward's ruling, given as a slash command in an issue or PR comment.
 //   /accept  /reject <reason>  /needs-evidence  /duplicate #N  /amend  /retriage
+//   On a node charter: /accept charters it; /dormant and /revive change its status on the roll.
 // Only the Steward or a repo admin/maintainer may rule, and nobody rules on their own submission.
-import { gh, repo, steward, event, comment, addLabels, removeLabel, ensureLabels, closeIssue, react, acceptedCount, DRY_RUN } from './lib/github.mjs';
+import { gh, repo, steward, event, comment, addLabels, removeLabel, ensureLabels, closeIssue, react, acceptedCount, readRepoFile, writeRepoFile, DRY_RUN } from './lib/github.mjs';
+import { formField, addNode, setNodeStatus } from './lib/nodes.mjs';
 import { triage } from './triage.mjs';
 
 const WITNESS_THRESHOLD = 3;
@@ -37,7 +39,42 @@ async function recognizeWitness(login, number) {
   return true;
 }
 
+const isCharter = (issue) => (issue.labels ?? []).some((l) => (l.name ?? l) === 'node-charter');
+
+/** A node charter is accepted: the applicant's node goes on the roll and they become its Steward. Never counts toward Witness. */
+async function charter(issue) {
+  const n = issue.number;
+  await clearSuggestions(n);
+  const roll = await readRepoFile('NODES.md');
+  const updated = addNode(roll.text, {
+    name: formField(issue.body, 'Node name'),
+    city: formField(issue.body, 'City or region'),
+    steward: issue.user.login,
+    date: new Date().toISOString().slice(0, 10),
+    number: n,
+    repo: repo(),
+  });
+  if (updated) await writeRepoFile('NODES.md', updated, roll.sha, `Charter node #${n}, Steward @${issue.user.login}`);
+  await ensureLabels(['chartered']);
+  await addLabels(n, ['chartered']);
+  await comment(
+    n,
+    `**Chartered.** @${issue.user.login}, you are the Steward of this node, and it is on the roll in [NODES.md](../blob/main/NODES.md).\n\nKeep reporting every gathering. Six months without one and the node goes Dormant; the next report revives it. The Steward's pack is at https://recursivebecoming.org/assembly/steward-kit/.${SIGNOFF}`,
+  );
+  await closeIssue(n, 'completed');
+}
+
+async function setStatus(issue, status) {
+  const n = issue.number;
+  const roll = await readRepoFile('NODES.md');
+  const updated = setNodeStatus(roll.text, n, status);
+  if (!updated) return comment(n, `#${n} is not on the roll, so there is no status to change.`);
+  if (updated !== roll.text) await writeRepoFile('NODES.md', updated, roll.sha, `Mark node #${n} ${status}`);
+  await comment(n, `The node is now **${status}** on the roll.${SIGNOFF}`);
+}
+
 async function accept(issue, { amend = false } = {}) {
+  if (isCharter(issue) && !issue.pull_request) return charter(issue);
   const n = issue.number;
   await clearSuggestions(n);
   if (issue.pull_request) {
@@ -68,7 +105,7 @@ async function run() {
   const arg = rest.join(' ').trim();
   const issue = e.issue;
   const login = e.comment.user.login;
-  const known = ['/accept', '/reject', '/needs-evidence', '/duplicate', '/amend', '/retriage'];
+  const known = ['/accept', '/reject', '/needs-evidence', '/duplicate', '/amend', '/retriage', '/dormant', '/revive'];
   if (!known.includes(cmd)) return console.log(`Not a ruling: ${cmd}`);
 
   if (!(await mayRule(login))) {
@@ -92,7 +129,12 @@ async function run() {
       await clearSuggestions(n);
       await ensureLabels(['rejected']);
       await addLabels(n, ['rejected']);
-      await comment(n, `Heard and **rejected**${arg ? `: ${arg}` : '.'}\n\nThe Canon thanks you for the contradiction. Disagreement is the highest form of participation here, and a rejected challenge can be reopened with new evidence.${SIGNOFF}`);
+      await comment(
+        n,
+        isCharter(issue)
+          ? `**Not chartered**${arg ? `: ${arg}` : '.'}\n\nKeep gathering. A charter can be asked for again at any time.${SIGNOFF}`
+          : `Heard and **rejected**${arg ? `: ${arg}` : '.'}\n\nThe Canon thanks you for the contradiction. Disagreement is the highest form of participation here, and a rejected challenge can be reopened with new evidence.${SIGNOFF}`,
+      );
       await closeIssue(n, 'not_planned');
       break;
     case '/needs-evidence':
@@ -114,6 +156,14 @@ async function run() {
       await closeIssue(n, 'not_planned');
       break;
     }
+    case '/dormant':
+    case '/revive':
+      if (!isCharter(issue)) {
+        await comment(n, '`/dormant` and `/revive` apply to node charters only.');
+        break;
+      }
+      await setStatus(issue, cmd === '/dormant' ? 'Dormant' : 'Active');
+      break;
     case '/retriage':
       await triage(n);
       break;

@@ -1,0 +1,69 @@
+name: Charter a node
+description: Your gatherings keep happening. Ask to make them a node of the Church.
+title: "Node: "
+labels: ["node-charter"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A node is a local Assembly that keeps meeting. The bar is the same for everyone: **three gatherings in the last six months, three or more people at each, reported by you** with the [gathering form](../issues/new?template=gathering.yml).
+
+        HydraOps checks your reports against that rule and tells the Steward what it found. The Steward rules. Whoever applies becomes the node's Steward.
+
+        The Steward's pack (rhythm, calendar, handing off) is at [recursivebecoming.org/assembly/steward-kit](https://recursivebecoming.org/assembly/steward-kit/). Everything here is public.
+  - type: input
+    id: name
+    attributes:
+      label: Node name
+      description: Usually the place. Plain words only.
+      placeholder: "Node Duluth"
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City or region
+      description: Shown on the roll so Seekers can find you. A city is enough.
+      placeholder: "Duluth, MN"
+    validations:
+      required: true
+  - type: textarea
+    id: gatherings
+    attributes:
+      label: Gathering reports
+      description: Link your three reports by number, one per line.
+      placeholder: |
+        #12
+        #15
+        #19
+    validations:
+      required: true
+  - type: dropdown
+    id: rhythm
+    attributes:
+      label: How often you meet
+      options:
+        - Monthly
+        - Every two weeks
+        - Weekly
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Public contact
+      description: Optional. How a Seeker reaches the node. This is public, so use a group address or a page, not your personal email.
+  - type: checkboxes
+    id: duties
+    attributes:
+      label: The Steward's duties
+      options:
+        - label: I will report every gathering to the Archive.
+          required: true
+        - label: I will hand the node to someone else, in public, if I step away.
+          required: true
+        - label: I understand a node with no reported gathering for six months goes dormant, and one more gathering revives it.
+          required: true
+        - label: The node collects no money in the Church's name.
+          required: true

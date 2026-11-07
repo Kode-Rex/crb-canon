@@ -67,6 +67,8 @@ export const LABELS = {
   witness: ['C97B52', 'A challenge to a claim. Bring evidence.'],
   gathering: ['8FA89A', 'A report from an Assembly gathering.'],
   'self-organized': ['C97B52', 'A gathering its host organized without the Founder. Counts for the pre-registration.'],
+  'node-charter': ['0E0E0E', 'A request to charter a local node.'],
+  chartered: ['8FA89A', 'Charter accepted. The node is on the roll in NODES.md.'],
 };
 
 export async function ensureLabels(names) {
@@ -79,6 +81,14 @@ export async function ensureLabels(names) {
     }
   }
 }
+
+/** A repository file's text and sha, for read-modify-write through the contents API. */
+export async function readRepoFile(path) {
+  const file = await gh('GET', `/repos/${repo()}/contents/${path}`);
+  return { text: Buffer.from(file.content ?? '', 'base64').toString('utf8'), sha: file.sha };
+}
+export const writeRepoFile = (path, text, sha, message) =>
+  gh('PUT', `/repos/${repo()}/contents/${path}`, { message, content: Buffer.from(text).toString('base64'), sha });
 
 /** How many of this person's challenges the Steward has accepted. */
 export async function acceptedCount(login) {

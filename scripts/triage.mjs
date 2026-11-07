@@ -9,7 +9,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { loadCanon } from './lib/canon.mjs';
-import { gh, repo, steward, event, comment, addLabels, removeLabel, ensureLabels, acceptedCount, notify } from './lib/github.mjs';
+import { gh, repo, steward, event, comment, addLabels, removeLabel, ensureLabels, acceptedCount, notify, readRepoFile, writeRepoFile } from './lib/github.mjs';
+import { NODE_RULE, formField, referencedIssues, readGathering, checkCharter, cleanCell, parseNodes, setNodeStatus } from './lib/nodes.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MODEL = 'claude-opus-5-5';
@@ -219,6 +220,67 @@ function render(sub, raw, record) {
   return lines.join('\n');
 }
 
+/** A charter is checked against the rule, not judged by the model: the Steward gets the evidence and rules. */
+async function reviewCharter(number, issue) {
+  const applicant = issue.user.login;
+  const refs = referencedIssues(formField(issue.body, 'Gathering reports')).filter((n) => n !== number).slice(0, 10);
+  const gatherings = await Promise.all(
+    refs.map(async (n) => {
+      try {
+        const g = await gh('GET', `/repos/${repo()}/issues/${n}`);
+        return g.pull_request ? { number: n, missing: true } : readGathering(g);
+      } catch {
+        return { number: n, missing: true };
+      }
+    }),
+  );
+  const { rows, counted, meets } = checkCharter({ applicant, gatherings });
+  const name = cleanCell(formField(issue.body, 'Node name')) || 'an unnamed node';
+  const city = cleanCell(formField(issue.body, 'City or region')) || 'an unlisted place';
+  const suggestion = meets ? 'accept' : 'needs-evidence';
+  for (const s of SUGGESTIONS) await removeLabel(number, `suggested:${s}`);
+  await ensureLabels(['node-charter', `suggested:${suggestion}`]);
+  await addLabels(number, [`suggested:${suggestion}`]);
+  const table = rows.length
+    ? ['| Report | Date | People | Counts? |', '|---|---|---|---|', ...rows.map((r) => `| #${r.number} | ${r.date ?? '–'} | ${r.people ?? '–'} | ${r.ok ? 'yes' : `no: ${r.problems.join(', ')}`} |`)].join('\n')
+    : '_No gathering reports were linked._';
+  const lines = [
+    `### Node charter · ${meets ? '**meets the bar**' : '**does not meet the bar yet**'}`,
+    '',
+    `@${steward()}, a request to charter **${name}** in ${city}. Whoever applies becomes its Steward.`,
+    '',
+    `The rule: ${NODE_RULE.gatherings} gatherings in the last ${NODE_RULE.months} months, at least ${NODE_RULE.minPeople} people at each, reported by the person applying.`,
+    '',
+    table,
+    '',
+    `Counted: **${counted} of ${NODE_RULE.gatherings}**.${meets ? '' : ' Report more gatherings, link them here, and ask for `/retriage`.'}`,
+    '',
+    '---',
+    'Rule with one: `/accept` (charter it) · `/reject <reason>` · `/needs-evidence` · `/retriage`',
+    '',
+    '<sub>Checked mechanically by HydraOps against the rule. The Steward decides. No body may certify the correctness of its own work.</sub>',
+    MARKER,
+  ];
+  await comment(number, lines.join('\n'));
+  await notify(`Canon #${number}: node charter, ${counted} of ${NODE_RULE.gatherings} gatherings count. https://github.com/${repo()}/issues/${number}`);
+  console.log(`#${number}: charter ${meets ? 'meets' : 'does not meet'} the bar (${counted})`);
+}
+
+/** A Dormant node revives when its Steward reports a gathering. */
+async function reviveNodesOf(login, number) {
+  let roll;
+  try {
+    roll = await readRepoFile('NODES.md');
+  } catch {
+    return [];
+  }
+  let text = roll.text;
+  const revived = parseNodes(text).filter((n) => n.status === 'Dormant' && n.steward.toLowerCase() === login.toLowerCase());
+  for (const n of revived) text = setNodeStatus(text, n.number, 'Active');
+  if (revived.length) await writeRepoFile('NODES.md', text, roll.sha, `Revive ${revived.map((n) => `#${n.number}`).join(', ')}: gathering reported in #${number}`);
+  return revived;
+}
+
 export async function triage(number) {
   const canon = loadCanon(root);
   const sub = await fetchSubmission(number);
@@ -226,12 +288,18 @@ export async function triage(number) {
     console.log(`#${number} was opened by ${sub.issue.user.login}; HydraOps does not triage its own work.`);
     return;
   }
+  if (sub.issue.labels?.some((l) => (l.name ?? l) === 'node-charter')) {
+    await reviewCharter(number, sub.issue);
+    return;
+  }
   if (sub.issue.labels?.some((l) => (l.name ?? l) === 'gathering')) {
     // A gathering report is a record, not a challenge: thank the host, ping the Steward, no ruling.
     const self = /ask you to host it\?\s*\n+\s*No, we organized it ourselves/i.test(sub.issue.body ?? '');
     await ensureLabels(['gathering', ...(self ? ['self-organized'] : [])]);
     if (self) await addLabels(number, ['self-organized']);
-    await comment(number, `Recorded in the Archive. Thank you for hosting.\n\n@${steward()}, a gathering was reported${self ? ' by a host who organized it themselves' : ''}.\n\nIf anything from it should change the Canon, open a [Witness issue](../issues/new?template=witness.yml) and link this report.\n${MARKER}`);
+    const revived = await reviveNodesOf(sub.issue.user.login, number);
+    const revivedNote = revived.length ? `\n\nThis gathering revives ${revived.map((n) => `#${n.number}`).join(', ')}: the node is Active again on the roll.` : '';
+    await comment(number, `Recorded in the Archive. Thank you for hosting.\n\n@${steward()}, a gathering was reported${self ? ' by a host who organized it themselves' : ''}.${revivedNote}\n\nIf anything from it should change the Canon, open a [Witness issue](../issues/new?template=witness.yml) and link this report. Three reports in six months and you can [charter a node](../issues/new?template=node.yml).\n${MARKER}`);
     await notify(`Canon #${number}: a gathering was reported${self ? ' (self-organized)' : ''}. https://github.com/${repo()}/issues/${number}`);
     return;
   }
