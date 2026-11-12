@@ -41,6 +41,10 @@ warnings:
 
 # Newest first. The first entry's version is the Canon's current version.
 amendments:
+  - version: v1.0.1
+    id: AMD-0002
+    summary: "Plain-voice pass on the seven Article bodies. Tenets, Observations and Warnings unchanged; VOICE.md and the tells gate adopted."
+    date: "2026-11-11"
   - version: v1.0.0
     id: AMD-0001
     summary: "Canon founded. Seven Articles adopted."

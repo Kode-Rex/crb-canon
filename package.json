@@ -8,7 +8,8 @@
     "test": "node --test scripts/lib/*.test.mjs",
     "sweep-nodes": "node scripts/sweep-nodes.mjs",
     "triage": "node scripts/triage.mjs",
-    "command": "node scripts/command.mjs"
+    "command": "node scripts/command.mjs",
+    "tells": "node scripts/tells.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
