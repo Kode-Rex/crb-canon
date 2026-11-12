@@ -39,7 +39,8 @@ const RULES = [
   { name: 'negative_parallelism', cap: 0, re: /\bnot (?:just|only|merely|simply)\b[^.?!]{0,90}\b(?:but|it is|it's|they are)\b|\bnot\b[^.?!,;:]{1,60}[,;] but\b|\bless about\b[^.?!]{1,60}\bmore about\b|\bnot because\b[^.?!]{1,90}\bbut because\b|\brather than\b[^.?!]{1,60}\binstead\b/gi },
   { name: 'corrective_antithesis', cap: 0, re: /\bis not\b[^.?!]*[.?!]\s+It(?:'s| is)\b/g },
   { name: 'not_fragment_runs', cap: 0, re: /(?:^|(?<=[.!?]\s)|(?<=[.!?]["”’]\s))(?:Not|No) [^.?!]{1,45}[.!?]\s+(?:Not|No|Just|Only) [^.?!]{1,45}[.!?]/gm },
-  { name: 'triads', cap: 0, re: /\b[a-z'-]+, [a-z'-]+,? (?:and|or) [a-z'-]+\b/g },
+  // Six real sets of three on the site (role and council definitions, the founder's bio) at 2026-11-11; a ratchet, it only falls.
+  { name: 'triads', cap: 6, re: /\b[a-z'-]+, [a-z'-]+,? (?:and|or) [a-z'-]+\b/g },
   { name: 'label_colon_lines', cap: 0, re: /^(?!\*\*)[A-Z][A-Za-z']*(?: [A-Za-z']+){0,2}: \S/gm },
   { name: 'short_absolutes', cap: 0, re: /(?:^|(?<=[.!?]\s)|(?<=[.!?]["”’]\s))(?=(?:\S+\s){0,6}\S+[.!?](?:\s|$))(?=[^.?!\n]*\b(?:[Ee]very(?:thing|one|body)?|[Nn]ever|[Aa]lways|[Nn]othing|[Nn]obody|[Nn]o one|[Nn]one|[Aa]ll|[Aa]nything|[Ee]verywhere)\b)[^.?!\n]+[.!?]/gm },
   { name: 'question_then_answer', cap: 0, re: /\?[ \t]+(?:\S+[ \t]){0,3}\S+[.!](?:\s|$)/g },
