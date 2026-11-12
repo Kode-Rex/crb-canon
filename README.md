@@ -5,7 +5,7 @@
 Unlike scripture handed down as finished truth, our Canon remains unfinished. Reality may amend it.
 
 <!-- generated:version -->
-**Current version: v1.0.0** · founded 2026-12-01 · [recursivebecoming.org/canon](https://recursivebecoming.org/canon/)
+**Current version: v1.0.0** · founded 2026-11-04 · [recursivebecoming.org/canon](https://recursivebecoming.org/canon/)
 <!-- /generated:version -->
 
 ## The Articles of Becoming
